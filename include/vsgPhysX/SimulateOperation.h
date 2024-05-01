@@ -19,7 +19,7 @@ namespace vsgPhysX
     class SimulateOperation : public vsg::Inherit<vsg::Operation, SimulateOperation>
     {
     public:
-        SimulateOperation(vsgPhysX::Scene* in_scene);
+        SimulateOperation(vsgPhysX::Scene* in_scene, std::size_t scratchMemoryBlockCount = 0);
 
         vsg::observer_ptr<vsg::Viewer> viewer;
         vsg::ref_ptr<vsgPhysX::Scene> scene;
@@ -27,5 +27,15 @@ namespace vsgPhysX
         double lastSimulationTime;
 
         void run() override;
+
+        void resizeScratchMemory(std::size_t blockCount);
+
+    private:
+        class alignas(16) ScratchBlock
+        {
+            std::uint8_t buffer[16 * 1024];
+        };
+
+        std::vector<ScratchBlock> scratchMemory;
     };
 } // namespace vsgPhysX

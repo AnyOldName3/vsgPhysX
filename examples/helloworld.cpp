@@ -178,7 +178,7 @@ int main(int argc, char** argv)
         }
     }
 
-    vsg::ref_ptr<vsgPhysX::SimulateOperation> simulateOperation = vsgPhysX::SimulateOperation::create(physicsScene);
+    vsg::ref_ptr<vsgPhysX::SimulateOperation> simulateOperation = vsgPhysX::SimulateOperation::create(physicsScene, 16);
 
     auto bounds = vsg::visit<vsg::ComputeBounds>(vsgScene).bounds;
 
