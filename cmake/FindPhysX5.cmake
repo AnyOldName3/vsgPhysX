@@ -4,6 +4,8 @@
 FindPhysX5
 -------
 
+TODO: this documentation comment is largely bogus
+
 Finds the PhysX5 library.
 
 Imported Targets

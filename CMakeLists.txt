@@ -15,6 +15,7 @@ set(CMAKE_CXX_STANDARD 17)
 #endif()
 
 find_package(vsg REQUIRED)
+# TODO: support vcpkg's modified PhysX
 find_package(PhysX5 5.0.0 REQUIRED)
 
 add_subdirectory(include/vsgPhysX)

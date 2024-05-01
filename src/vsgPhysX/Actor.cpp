@@ -17,7 +17,6 @@ vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createActor(const physx::PxG
         material = vsgPhysX::Engine::instance()->defaultMaterial;
     unique_ptr<physx::PxRigidActor> uniquePtr;
     // do we want to accept a pose/shape offset?
-    // todo default material if nullptr
     if (density > 0.0)
         uniquePtr.reset(physx::PxCreateDynamic(vsgPhysX::Engine::instance()->physics(), physx::PxTransform(physx::PxIdentity), geometry, *material, density));
     else
@@ -56,6 +55,7 @@ vsg::ref_ptr<vsg::Node> vsgPhysX::createNodeForActor(vsg::Builder& builder, vsgP
         const physx::PxGeometry& geometry = shape->getGeometry();
         switch (geometry.getType())
         {
+        // TODO: missing geometry types
         case physx::PxGeometryType::eSPHERE:
             break;
         case physx::PxGeometryType::ePLANE:
