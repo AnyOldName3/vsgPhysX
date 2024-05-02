@@ -2,11 +2,15 @@
 
 #include <PxMaterial.h>
 #include <PxPhysics.h>
-#include <extensions/PxDefaultAllocator.h>
+#ifdef OLD_VSG
+#    include <extensions/PxDefaultAllocator.h>
+#endif // OLD_VSG
+#include <foundation/PxAllocatorCallback.h>
 #include <foundation/PxErrorCallback.h>
 #include <foundation/PxFoundation.h>
 #include <foundation/PxPhysicsVersion.h>
 
+#include <vsg/core/Allocator.h>
 #include <vsg/io/Logger.h>
 
 #include <iostream>
@@ -14,9 +18,24 @@
 
 namespace
 {
-    // TODO: Make this configurable, or at least VSG-based.
-    // I guess it's sensible to adapt VSG's allocator with a PhysX-specific affinity as the default PhysX allocator doesn't have any anti-fragmentation measures.
+#ifdef OLD_VSG
     physx::PxDefaultAllocator physXAllocator;
+#else
+    class VsgAllocatorCallback : public physx::PxAllocatorCallback
+    {
+        void* allocate(size_t size, const char* typeName, const char* filename, int line) override
+        {
+            return vsg::allocate(size, vsg::AllocatorAffinity::ALLOCATOR_AFFINITY_PHYSICS);
+        }
+
+        void deallocate(void* ptr) override
+        {
+            return vsg::deallocate(ptr);
+        }
+    };
+
+    VsgAllocatorCallback physXAllocator;
+#endif // OLD_VSG
 
     class ErrorCallback : public physx::PxErrorCallback
     {
