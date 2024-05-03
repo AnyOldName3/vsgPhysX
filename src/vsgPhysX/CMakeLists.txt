@@ -2,6 +2,7 @@ set(PARENT_SCOPE_SOURCES "${SOURCES}")
 
 set(SOURCES
     Actor.cpp
+    ActorBuilder.cpp
     Engine.cpp
     PhysicsTransform.cpp
     Scene.cpp

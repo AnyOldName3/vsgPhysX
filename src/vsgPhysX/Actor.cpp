@@ -5,8 +5,7 @@
 #include <extensions/PxSimpleFactory.h>
 #include <geometry/PxPlaneGeometry.h>
 
-#include <vsg/utils/Builder.h>
-
+#include "ActorBuilder.h"
 #include "Convert.h"
 #include "Engine.h"
 #include "PhysicsTransform.h"
@@ -30,6 +29,12 @@ vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createBoxActor(const vsg::ve
     return createActor(geometry, density, material);
 }
 
+vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createCapsuleActor(float height, float radius, physx::PxReal density, physx::PxMaterial* material)
+{
+    physx::PxCapsuleGeometry geometry{radius, height / 2};
+    return createActor(geometry, density, material);
+}
+
 vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createPlaneActor(const vsg::vec4& plane, physx::PxMaterial* material)
 {
     if (!material)
@@ -40,7 +45,13 @@ vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createPlaneActor(const vsg::
     return unique_ptr<physx::PxRigidActor>(physx::PxCreateStatic(vsgPhysX::Engine::instance()->physics(), pose, physx::PxPlaneGeometry(), *material));
 }
 
-vsg::ref_ptr<vsg::Node> vsgPhysX::createNodeForActor(vsg::Builder& builder, vsgPhysX::unique_ptr<physx::PxRigidActor>&& actor)
+vsgPhysX::unique_ptr<physx::PxRigidActor> vsgPhysX::createSphereActor(float radius, physx::PxReal density, physx::PxMaterial* material)
+{
+    physx::PxSphereGeometry geometry{radius};
+    return createActor(geometry, density, material);
+}
+
+vsg::ref_ptr<vsg::Node> vsgPhysX::createNodeForActor(ActorBuilder& builder, vsgPhysX::unique_ptr<physx::PxRigidActor>&& actor)
 {
     vsg::ref_ptr<PhysicsTransform> transform = PhysicsTransform::create(std::move(actor));
 
@@ -50,24 +61,31 @@ vsg::ref_ptr<vsg::Node> vsgPhysX::createNodeForActor(vsg::Builder& builder, vsgP
     for (const physx::PxShape* shape : shapes)
     {
         vsg::GeometryInfo geomInfo;
-        geomInfo.transform = convert(physx::PxMat44(shape->getLocalPose()));
+        auto transformMatrix = convert(physx::PxMat44(shape->getLocalPose()));
+        geomInfo.transform = transformMatrix;
 
         const physx::PxGeometry& geometry = shape->getGeometry();
         switch (geometry.getType())
         {
         // TODO: missing geometry types
-        case physx::PxGeometryType::eSPHERE:
-            break;
-        case physx::PxGeometryType::ePLANE:
-            break;
-        case physx::PxGeometryType::eCAPSULE:
-            break;
+        case physx::PxGeometryType::eSPHERE: {
+            const auto& sphereGeom = static_cast<const physx::PxSphereGeometry&>(geometry);
+            transform->addChild(builder.createSphere(sphereGeom, transformMatrix));
+        }
+        break;
+        case physx::PxGeometryType::ePLANE: {
+            const auto& planeGeom = static_cast<const physx::PxPlaneGeometry&>(geometry);
+            transform->addChild(builder.createPlane(planeGeom, transformMatrix));
+        }
+        break;
+        case physx::PxGeometryType::eCAPSULE: {
+            const auto& capsuleGeom = static_cast<const physx::PxCapsuleGeometry&>(geometry);
+            transform->addChild(builder.createCapsule(capsuleGeom, transformMatrix));
+        }
+        break;
         case physx::PxGeometryType::eBOX: {
             const auto& boxGeom = static_cast<const physx::PxBoxGeometry&>(geometry);
-            geomInfo.dx = vsg::vec3(2 * boxGeom.halfExtents.x, 0.0f, 0.0f);
-            geomInfo.dy = vsg::vec3(0.0f, 2 * boxGeom.halfExtents.y, 0.0f);
-            geomInfo.dz = vsg::vec3(0.0f, 0.0f, 2 * boxGeom.halfExtents.z);
-            transform->addChild(builder.createBox(geomInfo));
+            transform->addChild(builder.createBox(boxGeom, transformMatrix));
         }
         break;
         case physx::PxGeometryType::eCONVEXMESH:
@@ -83,6 +101,7 @@ vsg::ref_ptr<vsg::Node> vsgPhysX::createNodeForActor(vsg::Builder& builder, vsgP
         case physx::PxGeometryType::eHAIRSYSTEM:
             break;
         case physx::PxGeometryType::eCUSTOM:
+            // cones and cylinders are implemented like this for whatever reason
             break;
         }
     }

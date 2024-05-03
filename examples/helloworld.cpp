@@ -7,6 +7,7 @@
 #include <vsg/all.h>
 
 #include <vsgPhysX/Actor.h>
+#include <vsgPhysX/ActorBuilder.h>
 #include <vsgPhysX/Convert.h>
 #include <vsgPhysX/Engine.h>
 #include <vsgPhysX/Scene.h>
@@ -150,6 +151,14 @@ int main(int argc, char** argv)
         flat->variants.clear();
     }
 
+    physx::PxGeometryType::Enum geometryType = physx::PxGeometryType::eBOX;
+    if (arguments.read("--sphere"))
+        geometryType = physx::PxGeometryType::eSPHERE;
+    if (arguments.read("--capsule"))
+        geometryType = physx::PxGeometryType::eCAPSULE;
+    if (arguments.read("--box"))
+        geometryType = physx::PxGeometryType::eBOX;
+
     vsgPhysX::Engine::reset(physx::PxTolerancesScale{1.0f, 10.0f});
 
     physx::PxSceneDesc sceneDesc{vsgPhysX::Engine::instance()->physics().getTolerancesScale()};
@@ -159,22 +168,55 @@ int main(int argc, char** argv)
     auto physicsScene = vsgPhysX::Scene::create(sceneDesc);
 
     auto vsgScene = vsg::Group::create();
-    auto builder = vsg::Builder::create();
+    auto builder = vsgPhysX::ActorBuilder::create();
 
     // Create the ground
     vsgPhysX::unique_ptr<physx::PxRigidActor> planeActor = vsgPhysX::createPlaneActor(vsg::vec4(0.0f, 0.0f, 1.0f, 0.0f));
     physicsScene->addActor(planeActor);
+
+    vsgScene->addChild(vsgPhysX::createNodeForActor(*builder, std::move(planeActor)));
 
     // Create many cubes
     for (int y = 0; y < 10; ++y)
     {
         for (int x = 0; x < 10; ++x)
         {
-            vsgPhysX::unique_ptr<physx::PxRigidActor> boxActor = vsgPhysX::createBoxActor(vsg::vec3(1.0f, 1.0f, 1.0f), 1.0f);
-            boxActor->setGlobalPose(physx::PxTransform(vsgPhysX::convert(vsg::translate(1.05f * float(x), 0.0f, 1.5f * float(y)))));
-            physicsScene->addActor(boxActor);
+            vsgPhysX::unique_ptr<physx::PxRigidActor> actor;
+            //
+            switch (geometryType)
+            {
+            case physx::PxGeometryType::eSPHERE:
+                actor = vsgPhysX::createSphereActor(0.5f, 1.0f);
+                break;
+            case physx::PxGeometryType::ePLANE:
+                break;
+            case physx::PxGeometryType::eCAPSULE:
+                actor = vsgPhysX::createCapsuleActor(0.2f, 0.4f, 1.0f);
+                break;
+            case physx::PxGeometryType::eBOX:
+                actor = vsgPhysX::createBoxActor({1.0f, 1.0f, 1.0f}, 1.0f);
+                break;
+            case physx::PxGeometryType::eCONVEXMESH:
+                break;
+            case physx::PxGeometryType::ePARTICLESYSTEM:
+                break;
+            case physx::PxGeometryType::eTETRAHEDRONMESH:
+                break;
+            case physx::PxGeometryType::eTRIANGLEMESH:
+                break;
+            case physx::PxGeometryType::eHEIGHTFIELD:
+                break;
+            case physx::PxGeometryType::eHAIRSYSTEM:
+                break;
+            case physx::PxGeometryType::eCUSTOM:
+                break;
+            default:
+                break;
+            }
+            actor->setGlobalPose(physx::PxTransform(vsgPhysX::convert(vsg::translate(1.05f * float(x), ((x * y) % 7) > 3 ? 0.0f : 0.01f, 1.5f * float(y)))));
+            physicsScene->addActor(actor);
 
-            vsgScene->addChild(vsgPhysX::createNodeForActor(*builder, std::move(boxActor)));
+            vsgScene->addChild(vsgPhysX::createNodeForActor(*builder, std::move(actor)));
         }
     }
 

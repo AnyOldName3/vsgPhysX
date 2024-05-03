@@ -2,6 +2,7 @@ set(PARENT_SCOPE_HEADERS "${HEADERS}")
 
 set(HEADERS
     Actor.h
+    ActorBuilder.h
     Convert.h
     Engine.h
     Export.h

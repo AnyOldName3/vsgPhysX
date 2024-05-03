@@ -23,11 +23,17 @@ namespace vsg
 
 namespace vsgPhysX
 {
+    class ActorBuilder;
+
     extern VSGPHYSX_DECLSPEC unique_ptr<physx::PxRigidActor> createActor(const physx::PxGeometry& geometry, physx::PxReal density, physx::PxMaterial* material = nullptr);
 
     extern VSGPHYSX_DECLSPEC unique_ptr<physx::PxRigidActor> createBoxActor(const vsg::vec3& dimensions, physx::PxReal density, physx::PxMaterial* material = nullptr);
 
+    extern VSGPHYSX_DECLSPEC unique_ptr<physx::PxRigidActor> createCapsuleActor(float height, float radius, physx::PxReal density, physx::PxMaterial* material = nullptr);
+
     extern VSGPHYSX_DECLSPEC unique_ptr<physx::PxRigidActor> createPlaneActor(const vsg::vec4& plane, physx::PxMaterial* material = nullptr);
 
-    extern VSGPHYSX_DECLSPEC vsg::ref_ptr<vsg::Node> createNodeForActor(vsg::Builder& builder, unique_ptr<physx::PxRigidActor>&& actor);
+    extern VSGPHYSX_DECLSPEC unique_ptr<physx::PxRigidActor> createSphereActor(float radius, physx::PxReal density, physx::PxMaterial* material = nullptr);
+
+    extern VSGPHYSX_DECLSPEC vsg::ref_ptr<vsg::Node> createNodeForActor(ActorBuilder& builder, unique_ptr<physx::PxRigidActor>&& actor);
 } // namespace vsgPhysX
