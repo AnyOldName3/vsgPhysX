@@ -36,6 +36,6 @@ namespace vsgPhysX
             std::uint8_t buffer[16 * 1024];
         };
 
-        std::vector<ScratchBlock> scratchMemory;
+        std::vector<ScratchBlock, vsg::allocator_affinity_physics<ScratchBlock>> scratchMemory;
     };
 } // namespace vsgPhysX
