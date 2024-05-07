@@ -15,8 +15,16 @@ set(CMAKE_CXX_STANDARD 17)
 #endif()
 
 find_package(vsg REQUIRED)
-# TODO: support vcpkg's modified PhysX
-find_package(PhysX5 5.0.0 REQUIRED)
+option(PHYSX_FROM_VCPKG "Use PhysX from vcpkg, which provides CMake config" OFF)
+if (NOT PHYSX_FROM_VCPKG)
+    find_package(PhysX5 5.0.0 REQUIRED)
+    set(physx_namespace PhysX5)
+    set(physx_main_library PhysX)
+else()
+    find_package(unofficial-omniverse-physx-sdk CONFIG REQUIRED)
+    set(physx_namespace unofficial::omniverse-physx-sdk)
+    set(physx_main_library sdk)
+endif()
 
 add_subdirectory(include/vsgPhysX)
 add_subdirectory(src/vsgPhysX)
@@ -29,7 +37,7 @@ target_include_directories(vsgPhysX
     PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/vsgPhysX>"
 )
 
-target_link_libraries(vsgPhysX vsg::vsg PhysX5::PhysX)
+target_link_libraries(vsgPhysX vsg::vsg ${physx_namespace}::${physx_main_library})
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(vsgPhysX INTERFACE VSGPHYSX_SHARED_LIBRARY)
