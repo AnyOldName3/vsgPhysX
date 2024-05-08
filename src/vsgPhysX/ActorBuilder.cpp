@@ -7,6 +7,8 @@
 #include <vsg/maths/common.h>
 #include <vsg/nodes/VertexIndexDraw.h>
 
+#include <VsgVersionCheck.h>
+
 vsg::ref_ptr<vsg::Node> vsgPhysX::ActorBuilder::createBox(const physx::PxBoxGeometry& boxGeom, const vsg::mat4& transform, const vsg::StateInfo& stateInfo)
 {
     vsg::GeometryInfo geomInfo;
@@ -20,7 +22,12 @@ vsg::ref_ptr<vsg::Node> vsgPhysX::ActorBuilder::createBox(const physx::PxBoxGeom
 vsg::ref_ptr<vsg::Node> vsgPhysX::ActorBuilder::createCapsule(const physx::PxCapsuleGeometry& capsuleGeom, const vsg::mat4& transform, const vsg::StateInfo& stateInfo)
 {
     // This function is copied from VSG with minor modifications to support separate radius and height
+#if VSG_API_VERSION_LESS(1, 1, 4)
+    // Cache doesn't work in upstream vsg::Builder before this, and can't be made to work as StateInfo is not Comparable
+    vsg::ref_ptr<vsg::Node> subgraph;
+#else
     auto& subgraph = _physxCapsules[std::make_tuple(capsuleGeom.radius, capsuleGeom.halfHeight, transform, stateInfo)];
+#endif
     if (subgraph)
     {
         return subgraph;
@@ -76,7 +83,7 @@ vsg::ref_ptr<vsg::Node> vsgPhysX::ActorBuilder::createCapsule(const physx::PxCap
     {
         unsigned int vi = c * 2;
         float r = float(c) / float(num_columns - 1);
-        float alpha = (r)*2.0f * vsg::PIf;
+        float alpha = (r) * 2.0f * vsg::PIf;
         v = dx * (-sinf(alpha)) + dy * (cosf(alpha));
         n = normalize(v);
 

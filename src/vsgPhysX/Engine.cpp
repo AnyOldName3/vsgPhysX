@@ -1,10 +1,12 @@
 #include "Engine.h"
 
+#include "VsgVersionCheck.h"
+
 #include <PxMaterial.h>
 #include <PxPhysics.h>
-#ifdef OLD_VSG
+#if VSG_API_VERSION_LESS(1, 1, 4)
 #    include <extensions/PxDefaultAllocator.h>
-#endif // OLD_VSG
+#endif
 #include <foundation/PxAllocatorCallback.h>
 #include <foundation/PxErrorCallback.h>
 #include <foundation/PxFoundation.h>
@@ -18,7 +20,7 @@
 
 namespace
 {
-#ifdef OLD_VSG
+#if VSG_API_VERSION_LESS(1, 1, 4)
     physx::PxDefaultAllocator physXAllocator;
 #else
     class VsgAllocatorCallback : public physx::PxAllocatorCallback
@@ -35,7 +37,7 @@ namespace
     };
 
     VsgAllocatorCallback physXAllocator;
-#endif // OLD_VSG
+#endif
 
     class ErrorCallback : public physx::PxErrorCallback
     {

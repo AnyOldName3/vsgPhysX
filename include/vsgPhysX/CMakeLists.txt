@@ -11,6 +11,7 @@ set(HEADERS
     ref_ptr.h
     Scene.h
     SimulateOperation.h
+    VsgVersionCheck.h
 )
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
