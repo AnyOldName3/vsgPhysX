@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(vsgPhysX)
 
+set(vsgphysxversion 0.1.0)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # set the use of C++17 globally as all examples require it
@@ -30,10 +32,13 @@ add_subdirectory(include/vsgPhysX)
 add_subdirectory(src/vsgPhysX)
 
 add_library(vsgPhysX ${HEADERS} ${SOURCES})
+set_property(TARGET vsgPhysX APPEND PROPERTY PUBLIC_HEADER ${HEADERS})
+set_target_properties(vsgPhysX PROPERTIES VERSION ${vsgphysxversion})
 add_library(vsgPhysX::vsgPhysX ALIAS vsgPhysX)
 
 target_include_directories(vsgPhysX
     PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/vsgPhysX>"
 )
 
@@ -42,6 +47,35 @@ target_link_libraries(vsgPhysX vsg::vsg ${physx_namespace}::${physx_main_library
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(vsgPhysX INTERFACE VSGPHYSX_SHARED_LIBRARY)
 endif()
+
+include(GNUInstallDirs)
+install(TARGETS vsgPhysX
+    EXPORT vsgPhysXTargets
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vsgPhysX
+)
+install(EXPORT vsgPhysXTargets
+    NAMESPACE vsgPhysX::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vsgPhysX
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfig.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsgPhysX"
+)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfigVersion.cmake"
+    VERSION ${vsgphysxversion}
+    COMPATIBILITY AnyNewerVersion
+)
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfigVersion.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPhysX5.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsgPhysX"
+)
+
+export(EXPORT vsgPhysXTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXTargets.cmake")
 
 option(VSGPHYSX_BUILD_EXAMPLES "Build vsgPhysX examples" ON)
 if (VSGPHYSX_BUILD_EXAMPLES)
