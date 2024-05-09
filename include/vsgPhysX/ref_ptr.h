@@ -166,7 +166,7 @@ namespace vsgPhysX
 
             if (_ptr) _ptr.release();
 
-            _ptr = ptr;
+            _ptr = rhs;
 
             return *this;
         }

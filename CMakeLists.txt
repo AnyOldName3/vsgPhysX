@@ -48,6 +48,10 @@ if (BUILD_SHARED_LIBS)
     target_compile_definitions(vsgPhysX INTERFACE VSGPHYSX_SHARED_LIBRARY)
 endif()
 
+if (MSVC)
+    target_compile_options(vsgPhysX PRIVATE /permissive-)
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS vsgPhysX
     EXPORT vsgPhysXTargets
