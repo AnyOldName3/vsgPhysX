@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build for single-config generators, options are: None Debug Release RelWithDebInfo MinSizeRel.")
+endif(NOT CMAKE_BUILD_TYPE)
+
 project(vsgPhysX)
 
 set(vsgphysxversion 0.1.0)
