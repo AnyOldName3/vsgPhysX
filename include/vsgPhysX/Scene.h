@@ -26,9 +26,11 @@ namespace vsgPhysX
         bool addActor(unique_ptr<T>& actor, const physx::PxBVH* bvh = nullptr)
         {
             if (actor)
-                return implementation().addActor(*actor, bvh);
+                return addActor(*actor, bvh);
             return false;
         }
+
+        bool addActor(physx::PxActor& actor, const physx::PxBVH* bvh = nullptr);
 
     protected:
         virtual ~Scene();
