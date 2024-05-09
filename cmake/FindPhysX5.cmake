@@ -90,7 +90,7 @@ macro(find_physx5_library library)
             )
             if (PhysX5_${library}_LIBRARY_${config_uc})
                 # cmake doesn't support libraries only being static for certain configurations, so set overall
-                set(PhysX5_${library}_STATIC TRUE)
+                set(PhysX5_${library}_STATIC TRUE CACHE BOOL "Library is static")
             endif()
         elseif (WIN32)
             string(REGEX REPLACE "(.)(\\.[^.]+)?$" "\\1.dll" dll_path "${PhysX5_${library}_LIBRARY_${config_uc}}")
@@ -153,7 +153,7 @@ foreach (library PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExt
                     )
                 else()
                     set_target_properties(PhysX5::${library} PROPERTIES
-                        IMPORTED_LOCATION_${config_uc} "${PhysX5_PhysX_LIBRARY_${config_uc}}"
+                        IMPORTED_LOCATION_${config_uc} "${PhysX5_${library}_LIBRARY_${config_uc}}"
                     )
                 endif()
             endif()
