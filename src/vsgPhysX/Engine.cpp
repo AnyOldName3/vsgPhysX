@@ -11,6 +11,7 @@
 #include <foundation/PxErrorCallback.h>
 #include <foundation/PxFoundation.h>
 #include <foundation/PxPhysicsVersion.h>
+#include <gpu/PxGpu.h>
 
 #include <vsg/core/Allocator.h>
 #include <vsg/io/Logger.h>
@@ -95,6 +96,21 @@ const std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::reset(const physx::Px
 const std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::instance()
 {
     return instanceInternal();
+}
+
+physx::PxCudaContextManager* vsgPhysX::Engine::getOrCreateCudaContextManager(const physx::PxCudaContextManagerDesc& desc, physx::PxProfilerCallback* profilerCallback, bool launchSynchronous, bool force)
+{
+    if (force)
+        _cudaContextManager.reset();
+
+    if (!_cudaContextManager)
+    {
+        _cudaContextManager = unique_ptr<physx::PxCudaContextManager>(PxCreateCudaContextManager(*_foundation, desc, profilerCallback, launchSynchronous));
+        if (_cudaContextManager && !_cudaContextManager->contextIsValid())
+            _cudaContextManager.reset();
+    }
+
+    return _cudaContextManager.get();
 }
 
 std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::instanceInternal()

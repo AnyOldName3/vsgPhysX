@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/PxTolerancesScale.h>
+#include <cudamanager/PxCudaContextManager.h>
 
 #include <vsg/core/Inherit.h>
 
@@ -13,6 +14,7 @@ namespace physx
     class PxFoundation;
     class PxMaterial;
     class PxPhysics;
+    class PxProfilerCallback;
 } // namespace physx
 
 namespace vsgPhysX
@@ -37,9 +39,13 @@ namespace vsgPhysX
         physx::PxFoundation& foundation() const { return *_foundation; }
         physx::PxPhysics& physics() const { return *_physics; }
 
+        physx::PxCudaContextManager* getOrCreateCudaContextManager(const physx::PxCudaContextManagerDesc& desc = {}, physx::PxProfilerCallback* profilerCallback = nullptr, bool launchSynchronous = false, bool force = false);
+
     protected:
         static std::unique_ptr<Engine>& instanceInternal();
 
         Engine(const physx::PxTolerancesScale& tolerancesScale);
+
+        unique_ptr<physx::PxCudaContextManager> _cudaContextManager;
     };
 } // namespace vsgPhysX
