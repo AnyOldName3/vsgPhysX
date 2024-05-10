@@ -32,6 +32,15 @@ namespace vsgPhysX
 
         bool addActor(physx::PxActor& actor, const physx::PxBVH* bvh = nullptr);
 
+        template<class T>
+        void removeActor(unique_ptr<T>& actor, bool wakeOnLostTouch = true)
+        {
+            if (actor)
+                removeActor(*actor, wakeOnLostTouch);
+        }
+
+        void removeActor(physx::PxActor& actor, bool wakeOnLostTouch = true);
+
     protected:
         virtual ~Scene();
 
