@@ -93,6 +93,12 @@ const std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::reset(const physx::Px
     return instance();
 }
 
+const std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::reset(std::nullptr_t)
+{
+    instanceInternal() = nullptr;
+    return instance();
+}
+
 const std::unique_ptr<vsgPhysX::Engine>& vsgPhysX::Engine::instance()
 {
     return instanceInternal();

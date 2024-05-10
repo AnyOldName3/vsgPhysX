@@ -23,6 +23,7 @@ namespace vsgPhysX
     {
     public:
         static const std::unique_ptr<Engine>& reset(const physx::PxTolerancesScale& tolerancesScale = physx::PxTolerancesScale());
+        static const std::unique_ptr<Engine>& reset(std::nullptr_t);
 
         static const std::unique_ptr<Engine>& instance();
 
