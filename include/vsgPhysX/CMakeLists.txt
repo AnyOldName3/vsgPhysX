@@ -10,6 +10,7 @@ set(HEADERS
     unique_ptr.h
     ref_ptr.h
     Scene.h
+    ScratchBuffer.h
     SimulateOperation.h
     VsgVersionCheck.h
 )

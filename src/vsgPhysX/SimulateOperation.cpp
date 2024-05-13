@@ -19,8 +19,7 @@ void vsgPhysX::SimulateOperation::run()
         double viewerTime = refViewer->getFrameStamp()->simulationTime;
         if (lastSimulationTime < viewerTime)
         {
-            physx::PxU32 scratchMemorySize = static_cast<physx::PxU32>(std::min<std::size_t>(scratchMemory.size() * sizeof(ScratchBlock), std::numeric_limits<physx::PxU32>::max()));
-            scene->implementation().simulate(static_cast<physx::PxReal>(viewerTime - lastSimulationTime), nullptr, scratchMemory.data(), scratchMemorySize);
+            scene->implementation().simulate(static_cast<physx::PxReal>(viewerTime - lastSimulationTime), nullptr, scratchMemory.data(), scratchBufferSize(scratchMemory));
             scene->implementation().fetchResults(true);
             lastSimulationTime = viewerTime;
         }

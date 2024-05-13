@@ -6,18 +6,12 @@
 
 #include "Export.h"
 #include "Scene.h"
-#include "VsgVersionCheck.h"
+#include "ScratchBuffer.h"
 
 namespace vsg
 {
     class Viewer;
 }
-
-#if VSG_API_VERSION_LESS(1, 1, 4)
-#    define ALLOCATOR std::allocator
-#else
-#    define ALLOCATOR vsg::allocator_affinity_physics
-#endif
 
 namespace vsgPhysX
 {
@@ -38,11 +32,7 @@ namespace vsgPhysX
         void resizeScratchMemory(std::size_t blockCount);
 
     private:
-        class alignas(16) ScratchBlock
-        {
-            std::uint8_t buffer[16 * 1024];
-        };
 
-        std::vector<ScratchBlock, ALLOCATOR<ScratchBlock>> scratchMemory;
+        ScratchBuffer scratchMemory;
     };
 } // namespace vsgPhysX
