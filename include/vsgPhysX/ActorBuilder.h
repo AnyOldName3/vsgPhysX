@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vsg/io/Options.h>
 #include <vsg/utils/Builder.h>
 
 #include "Export.h"
