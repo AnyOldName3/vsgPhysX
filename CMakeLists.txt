@@ -82,9 +82,14 @@ write_basic_package_version_file(
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXConfigVersion.cmake"
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPhysX5.cmake"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsgPhysX"
 )
+if (NOT PHYSX_FROM_VCPKG)
+    install(FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindPhysX5.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsgPhysX"
+    )
+endif()
 
 export(EXPORT vsgPhysXTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/vsgPhysXTargets.cmake")
 
