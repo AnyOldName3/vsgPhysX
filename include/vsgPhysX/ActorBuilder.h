@@ -19,6 +19,11 @@ namespace vsgPhysX
     class VSGPHYSX_DECLSPEC ActorBuilder : public vsg::Inherit<vsg::Builder, ActorBuilder>
     {
     public:
+        ActorBuilder() = default;
+
+        ActorBuilder(const ActorBuilder&) = delete;
+        ActorBuilder& operator=(const ActorBuilder&) = delete;
+
         using vsg::Builder::createBox;
         using vsg::Builder::createCapsule;
         using vsg::Builder::createSphere;
