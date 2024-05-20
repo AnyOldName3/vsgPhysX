@@ -30,3 +30,4 @@ PhysX can be more of a pain, so there are two recommended approaches:
      * If you're not happy with the defaults (`debug` for `Debug` and `checked` for everything else), set the `PHYSX_MAP_IMPORTED_CONFIG_<confi>}` variables, or set `PHYSX_BUILD_TYPE` to do it overall.
 2. * Get the unofficial vcpkg PhysX port.
    * You can either use vcpkg's toolchain file as usual, or include the vcpkg install directory in `CMAKE_PREFIX_PATH` as it exports proper CMake config files rather than relying on vcpkg magic.
+   * You'll need to set `PHYSX_FROM_VCPKG=1` (or `=ON` or `=TRUE` or anything else CMake thinks is truthy) when configuring this project so it looks for the vcpkg port rather than regular PhysX.
